@@ -42,13 +42,19 @@
     </dependencies>
  
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-	<finalName>springbootApp</finalName>
-    </build>
- 
+        </build>
+
+<distributionManagement>
+
+    <repository>
+        <id>maven-releases</id>
+    </repository>
+
+    <snapshotRepository>
+        <id>maven-snapshots</id>
+        <url>http://3.234.241.43:8081/repository/maven-snapshots/</url>
+    </snapshotRepository>
+
+</distributionManagement>
+
 </project>
