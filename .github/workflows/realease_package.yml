@@ -1,0 +1,45 @@
+name: Release Package
+
+on:
+  workflow_run:
+    workflows:
+      - Create Package
+    types:
+      - completed
+
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Set up Cloudsmith CLI with OIDC
+        uses: cloudsmith-io/cloudsmith-cli-action@v3
+        with:
+          oidc-namespace: ${{ vars.CLOUDSMITH_WORKSPACE }}
+          oidc-service-slug: ${{ vars.CLOUDSMITH_SERVICE_SLUG }}
+          verify-auth: "true"
+
+      - name: Verify Cloudsmith authentication
+        run: cloudsmith whoami
+      - name: Publish package to staging
+        run: |
+          cloudsmith push python \
+            ${{ vars.CLOUDSMITH_WORKSPACE }}/${{ vars.CLOUDSMITH_STAGING_REPO }} \
+            dist/*
+        run: |
+          cloudsmith push python \
+            ${{ vars.CLOUDSMITH_WORKSPACE }}/${{ vars.CLOUDSMITH_STAGING_REPO }} \
+            dist/*
